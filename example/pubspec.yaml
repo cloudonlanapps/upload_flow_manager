@@ -2,8 +2,6 @@ name: exampe
 description: upload_flow_manager usage example
 publish_to: 'none'
 
-version: 1.0.0+1
-
 environment:
   sdk: '>=3.0.6 <4.0.0'
 
