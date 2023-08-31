@@ -11,7 +11,7 @@ import '../model/candidates/candiate.dart';
 
 class UploadQueueNotifier
     extends StateNotifier<AsyncValue<List<UploadEntity>>> {
-  final UploadManager uploadManager;
+  final UploadHandler uploadManager;
   late final Database database;
   UploadQueueNotifier({required this.uploadManager, required this.database})
       : super(const AsyncValue.loading()) {

@@ -9,7 +9,7 @@ typedef UpdateStatusFn = void Function(int taskId,
     {required UploadStatus status, String? response});
 typedef UpdateProgress = void Function(int taskId, double progress);
 
-abstract class UploadManager {
+abstract class UploadHandler {
   UpdateStatusFn? updateStatus;
   UpdateProgress? updateProgress;
   void onSubscribe({
@@ -42,7 +42,7 @@ class UploadConfig {
           childAspectRatio: 1,
           crossAxisSpacing: 8,
           mainAxisSpacing: 12);
-  UploadManager uploadManager;
+  UploadHandler uploadManager;
 
   UploadConfig({
     required this.previewGenerator,

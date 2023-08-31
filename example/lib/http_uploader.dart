@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:upload_flow_manager/files_uploader.dart';
 
-class UploadManagerUsingHttp extends UploadManager {
+class UploadManagerUsingHttp extends UploadHandler {
   final String url;
   final String fileField;
 
