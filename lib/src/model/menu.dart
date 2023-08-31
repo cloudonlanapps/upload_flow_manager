@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
 
 class MenuItem {
-  final IconData iconData;
-  final Function() onSelection;
-
-  MenuItem({required this.iconData, required this.onSelection});
-}
-
-class AdditionalMenuItem {
   String label;
+  final IconData iconData;
   Function() onSelection;
-  AdditionalMenuItem({
+  MenuItem({
     required this.label,
+    required this.iconData,
     required this.onSelection,
   });
 }
 
 class Menu {
   List<MenuItem> menuItems;
-  final List<AdditionalMenuItem>? additionalMenuItems;
+  final List<MenuItem>? additionalMenuItems;
   Menu({
     required this.menuItems,
     this.additionalMenuItems,

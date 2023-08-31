@@ -17,14 +17,16 @@ class CandidatePicker extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          IconButton(
-            onPressed: () async {
-              List<String> candidates = await cfg.picker(context, ref);
-              ref
-                  .read(uploadCandidatesNotifierProvider.notifier)
-                  .add(candidates);
-            },
-            icon: Icon(cfg.pickerIconData),
+          Flexible(
+            child: IconButton(
+              onPressed: () async {
+                List<String> candidates = await cfg.picker(context, ref);
+                ref
+                    .read(uploadCandidatesNotifierProvider.notifier)
+                    .add(candidates);
+              },
+              icon: Icon(cfg.pickerIconData),
+            ),
           ),
           Text(cfg.pickerLabel),
         ],

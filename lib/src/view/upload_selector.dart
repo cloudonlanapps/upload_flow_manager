@@ -9,6 +9,7 @@ import '../export/entity.dart';
 import '../model/candidates/candidates.dart';
 import '../model/menu.dart';
 import '../provider/candidates.dart';
+import '../provider/others.dart';
 import '../provider/queue.dart';
 import 'cl_tile.dart';
 import 'uploader_candidate.dart';
@@ -30,7 +31,7 @@ class UploadSelector extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final uploadCandidates =
         uploader.candidates.where((e) => e.isSelected).toList();
-
+    final spaceAvailable = ref.watch(spaceAvailableProvider);
     final int uploadCandidatesCount =
         uploader.candidates.where((e) => e.isSelected).length;
     final int totalCandidatesCount = uploader.candidates.length;
@@ -39,6 +40,7 @@ class UploadSelector extends ConsumerWidget {
       if (uploadCandidatesCount > 0)
         MenuItem(
             iconData: MdiIcons.upload,
+            label: "Upload",
             onSelection: () {
               ref
                   .read(uploadQueueNotifierProvider.notifier)
@@ -52,13 +54,15 @@ class UploadSelector extends ConsumerWidget {
             })
     ], additionalMenuItems: [
       if (uploadCandidatesCount < totalCandidatesCount)
-        AdditionalMenuItem(
+        MenuItem(
+            iconData: MdiIcons.selectMultipleMarker,
             label: "Select All",
             onSelection: () {
               ref.read(uploadCandidatesNotifierProvider.notifier).selectAll();
             }),
       if (uploadCandidatesCount > 0)
-        AdditionalMenuItem(
+        MenuItem(
+            iconData: MdiIcons.selectionRemove,
             label: "Select None",
             onSelection: () {
               ref.read(uploadCandidatesNotifierProvider.notifier).selectNone();
@@ -67,7 +71,7 @@ class UploadSelector extends ConsumerWidget {
 
     return Column(
       children: [
-        if (queue.isNotEmpty)
+        if (queue.isNotEmpty && spaceAvailable)
           Align(
               alignment: Alignment.centerRight,
               child: IconButton(
@@ -81,10 +85,10 @@ class UploadSelector extends ConsumerWidget {
                 fit: StackFit.expand,
                 children: [
                   if (uploader.candidates.isEmpty)
-                    const CandidatePicker()
+                    const FittedBox(child: CandidatePicker())
                   else
                     const CandidatesView(),
-                  if (uploader.candidates.isNotEmpty)
+                  if (uploader.candidates.isNotEmpty && spaceAvailable)
                     Positioned(
                         bottom: 0,
                         left: 0,
@@ -96,18 +100,32 @@ class UploadSelector extends ConsumerWidget {
           ),
         ),
         if (totalCandidatesCount > 0)
-          Container(
-            height: 32,
-            decoration:
-                BoxDecoration(color: Theme.of(context).colorScheme.secondary),
-            child: Center(
-                child: Text(
-              "$uploadCandidatesCount of $totalCandidatesCount Selected to upload",
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium
-                  ?.copyWith(color: Theme.of(context).colorScheme.onSecondary),
-            )),
+          Row(
+            children: [
+              Flexible(
+                child: SizedBox(
+                  height: 32,
+                  child: Center(
+                      child: Text(
+                    "$uploadCandidatesCount of $totalCandidatesCount Selected to upload",
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onBackground,
+                        overflow: TextOverflow.ellipsis),
+                  )),
+                ),
+              ),
+              if (uploader.candidates.isNotEmpty && !spaceAvailable)
+                MenuView(
+                    menu: Menu(menuItems: [], additionalMenuItems: [
+                  ...menu.menuItems,
+                  if (menu.additionalMenuItems?.isNotEmpty ?? false)
+                    ...menu.additionalMenuItems!,
+                  MenuItem(
+                      label: "Close",
+                      iconData: MdiIcons.close,
+                      onSelection: onFileSelectionDone)
+                ]))
+            ],
           )
       ],
     );

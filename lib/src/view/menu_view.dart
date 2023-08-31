@@ -17,15 +17,22 @@ class MenuView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: Container(
-        margin: const EdgeInsets.only(bottom: 4),
-        padding: const EdgeInsets.only(bottom: 4),
+        margin:
+            menu.menuItems.isNotEmpty ? const EdgeInsets.only(bottom: 4) : null,
+        padding:
+            menu.menuItems.isNotEmpty ? const EdgeInsets.only(bottom: 4) : null,
         height: 32,
-        decoration: ShapeDecoration(
-            color: Theme.of(context).colorScheme.primary.withAlpha(200),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(32.0),
-                side: BorderSide(
-                    width: 2, color: Theme.of(context).colorScheme.primary))),
+        decoration: menu.menuItems.isNotEmpty
+            ? ShapeDecoration(
+                color: Theme.of(context).colorScheme.primary.withAlpha(200),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(32.0),
+                    side: BorderSide(
+                        width: 2,
+                        color: Theme.of(context).colorScheme.primary)))
+            : BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withAlpha(200),
+              ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

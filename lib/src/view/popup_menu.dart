@@ -5,7 +5,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../model/menu.dart';
 
 class AdditionalMenu extends StatelessWidget {
-  final List<AdditionalMenuItem> menuItems;
+  final List<MenuItem> menuItems;
   const AdditionalMenu({
     super.key,
     required this.menuItems,
@@ -13,19 +13,27 @@ class AdditionalMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<AdditionalMenuItem>(
+    return PopupMenuButton<MenuItem>(
       icon: Icon(MdiIcons.dotsHorizontal),
       color: Theme.of(context).colorScheme.onPrimary,
       padding: const EdgeInsets.all(0),
-      onSelected: (AdditionalMenuItem item) => item.onSelection(),
-      itemBuilder: (BuildContext context) =>
-          <PopupMenuEntry<AdditionalMenuItem>>[
+      onSelected: (MenuItem item) => item.onSelection(),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItem>>[
         for (var item in menuItems)
-          PopupMenuItem<AdditionalMenuItem>(
+          PopupMenuItem<MenuItem>(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               textStyle: Theme.of(context).textTheme.labelMedium,
               value: item,
-              child: Text(item.label)),
+              child: Row(
+                children: [
+                  Icon(item.iconData),
+                  Flexible(
+                      child: Text(
+                    item.label,
+                    overflow: TextOverflow.fade,
+                  )),
+                ],
+              )),
       ],
     );
   }

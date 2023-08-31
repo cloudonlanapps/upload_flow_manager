@@ -10,6 +10,7 @@ import '../model/candidates/candidates.dart';
 import '../export/config.dart';
 import '../model/menu.dart';
 import '../provider/candidates.dart';
+import '../provider/others.dart';
 import '../provider/queue.dart';
 import 'entity_view.dart';
 import 'error.dart';
@@ -46,21 +47,6 @@ class UploaderView extends ConsumerWidget {
   }
 }
 
-class OnSelectFileNotifier extends StateNotifier<bool> {
-  OnSelectFileNotifier() : super(false);
-  toggle() {
-    state = !state;
-  }
-
-  set() => state = true;
-  clear() => state = false;
-}
-
-final onSelectFileProvider =
-    StateNotifierProvider<OnSelectFileNotifier, bool>((ref) {
-  return OnSelectFileNotifier();
-});
-
 class _UploaderView extends ConsumerWidget {
   final List<UploadEntity> queue;
   final Function() onSelectFiles;
@@ -69,17 +55,19 @@ class _UploaderView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewImage = ref.watch(imageSelectionProvider);
-
+    final spaceAvailable = ref.watch(spaceAvailableProvider);
     final UploadConfig cfg = ref.watch(uploadConfigProvider);
 
     Menu menu = Menu(menuItems: [
       MenuItem(
           iconData: MdiIcons.refresh,
+          label: "Refresh",
           onSelection: () {
             ref.read(uploadQueueNotifierProvider.notifier).refresh();
           }),
       MenuItem(
           iconData: MdiIcons.plus,
+          label: "Add more",
           onSelection: () async {
             List<String> candidates = await cfg.picker(context, ref);
             onSelectFiles();
@@ -88,56 +76,81 @@ class _UploaderView extends ConsumerWidget {
     ], additionalMenuItems: [
       if (queue.any((element) => element.uploadStatus.isFinalState) ||
           queue.any((element) => element.uploadStatus == UploadStatus.enqueued))
-        AdditionalMenuItem(
+        MenuItem(
+            iconData: MdiIcons.selectionRemove,
             label: "Remove All",
             onSelection: () {
               ref.read(uploadQueueNotifierProvider.notifier).removeAll();
             }),
       if (queue.any((element) => element.uploadStatus.isFinalState))
-        AdditionalMenuItem(
+        MenuItem(
+            iconData: MdiIcons.selectionEllipseRemove,
             label: "Remove Completed",
             onSelection: () {
               ref.read(uploadQueueNotifierProvider.notifier).removeCompleted();
             })
     ]);
 
-    return Stack(
+    return Column(
       children: [
-        Align(
-            alignment: Alignment.topCenter,
-            child: GridView.builder(
-                gridDelegate: cfg.gridDeligate,
-                itemCount: queue.length,
-                itemBuilder: (BuildContext ctx, index) {
-                  return Hero(
-                    tag: queue[index].path,
-                    child: UploadEntityView(
-                      entity: queue[index],
+        Flexible(
+          child: Stack(
+            children: [
+              Align(
+                  alignment: Alignment.topCenter,
+                  child: GridView.builder(
+                      gridDelegate: cfg.gridDeligate,
+                      itemCount: queue.length,
+                      itemBuilder: (BuildContext ctx, index) {
+                        return Hero(
+                          tag: queue[index].path,
+                          child: UploadEntityView(
+                            entity: queue[index],
+                          ),
+                        );
+                      })),
+              if (spaceAvailable)
+                Positioned(
+                    bottom: 0, left: 0, right: 0, child: MenuView(menu: menu)),
+              if (viewImage != null)
+                GestureDetector(
+                  onTap: () {
+                    ref.read(imageSelectionProvider.notifier).onCancelImage();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onBackground
+                            .withAlpha(128)),
+                    child: Center(
+                      child: Hero(
+                        tag: viewImage,
+                        child: AspectRatio(
+                            aspectRatio: 1.0,
+                            child: cfg.previewGenerator(viewImage)),
+                      ),
                     ),
-                  );
-                })),
-        Positioned(bottom: 0, left: 0, right: 0, child: MenuView(menu: menu)),
-        if (viewImage != null)
-          GestureDetector(
-            onTap: () {
-              ref.read(imageSelectionProvider.notifier).onCancelImage();
-            },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onBackground
-                      .withAlpha(128)),
-              child: Center(
-                child: Hero(
-                  tag: viewImage,
-                  child: AspectRatio(
-                      aspectRatio: 1.0, child: cfg.previewGenerator(viewImage)),
-                ),
-              ),
-            ),
-          )
+                  ),
+                )
+            ],
+          ),
+        ),
+        if (!spaceAvailable)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Align(
+                  alignment: Alignment.centerRight,
+                  child: MenuView(
+                      menu: Menu(menuItems: [], additionalMenuItems: [
+                    ...menu.menuItems,
+                    if (menu.additionalMenuItems?.isNotEmpty ?? false)
+                      ...menu.additionalMenuItems!
+                  ]))),
+            ],
+          ),
       ],
     );
   }

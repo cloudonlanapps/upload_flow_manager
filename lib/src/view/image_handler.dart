@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../model/candidates/candidates.dart';
 import '../model/menu.dart';
@@ -83,10 +84,14 @@ class DeviceImageHandler extends ConsumerWidget {
                   alignment: Alignment.centerRight,
                   child: AdditionalMenu(
                     menuItems: [
-                      AdditionalMenuItem(
-                          label: "Select All", onSelection: () {}),
-                      AdditionalMenuItem(
-                          label: "Select None", onSelection: () {}),
+                      MenuItem(
+                          iconData: MdiIcons.selectMultipleMarker,
+                          label: "Select All",
+                          onSelection: () {}),
+                      MenuItem(
+                          iconData: MdiIcons.selectionRemove,
+                          label: "Select None",
+                          onSelection: () {}),
                     ],
                   ))),
         ],
