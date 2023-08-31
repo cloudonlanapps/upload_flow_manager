@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:upload_flow_manager/files_uploader.dart';
+import 'package:upload_flow_manager/upload_flow_manager.dart';
 
 import 'http_uploader.dart';
 import 'image_picker.dart';
