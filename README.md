@@ -59,14 +59,23 @@ Now call the widget as below with a UploadConfig widget.
 
 ## Additional information
 
+### Implementation details
+This package uses Riverpod for managing states and sqlite3 for presistent state.
+This helps to preserve pending downloads across sessions and even after the application restarts.
+
 ### Pending task
 #### Library
   1. sqlite3 open.overrideFor should be done in a callback.
   2. move http implementation as internal and default upload handler
   3. Alternate list based interface along with current grid based
+  4. Retry failed cases
+  5. Retry all pending when restarted.
+  6. Implement background task that runs even after the app is closed. 
+  7. Allow the application to add auxilary information for upload
+  8. Have a callback after every upload completed to update states on other part of the applications
 
 ### Example
-  3. Provide an upload handler implementation using background_downloader.
-  4. Along with images, also implement files uploader
-  5. Handle non-image previews
+  1. Provide an upload handler implementation using background_downloader.
+  2. Along with images, also implement files uploader
+  3. Handle non-image previews
   
