@@ -79,23 +79,20 @@ class UploadSelector extends ConsumerWidget {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(2.0),
-            child: Card(
-              elevation: 4,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (uploader.candidates.isEmpty)
-                    const FittedBox(child: CandidatePicker())
-                  else
-                    const CandidatesView(),
-                  if (uploader.candidates.isNotEmpty && spaceAvailable)
-                    Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: MenuView(menu: menu)),
-                ],
-              ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (uploader.candidates.isEmpty)
+                  const FittedBox(child: CandidatePicker())
+                else
+                  const CandidatesView(),
+                if (uploader.candidates.isNotEmpty && spaceAvailable)
+                  Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: MenuView(menu: menu)),
+              ],
             ),
           ),
         ),
