@@ -83,7 +83,7 @@ class UploadSelector extends ConsumerWidget {
               fit: StackFit.expand,
               children: [
                 if (uploader.candidates.isEmpty)
-                  const FittedBox(child: CandidatePicker())
+                  const CandidatePicker()
                 else
                   const CandidatesView(),
                 if (uploader.candidates.isNotEmpty && spaceAvailable)

@@ -70,8 +70,12 @@ class _UploaderView extends ConsumerWidget {
           label: "Add more",
           onSelection: () async {
             List<String> candidates = await cfg.picker(context, ref);
-            onSelectFiles();
-            ref.read(uploadCandidatesNotifierProvider.notifier).add(candidates);
+            if (candidates.isNotEmpty) {
+              onSelectFiles();
+              ref
+                  .read(uploadCandidatesNotifierProvider.notifier)
+                  .add(candidates);
+            }
           }),
     ], additionalMenuItems: [
       if (queue.any((element) => element.uploadStatus.isFinalState) ||
