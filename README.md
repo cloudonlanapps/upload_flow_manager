@@ -59,3 +59,14 @@ Now call the widget as below with a UploadConfig widget.
 
 ## Additional information
 
+### Pending task
+#### Library
+  1. sqlite3 open.overrideFor should be done in a callback.
+  2. move http implementation as internal and default upload handler
+  3. Alternate list based interface along with current grid based
+
+### Example
+  3. Provide an upload handler implementation using background_downloader.
+  4. Along with images, also implement files uploader
+  5. Handle non-image previews
+  
