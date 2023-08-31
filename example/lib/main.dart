@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upload_flow_manager/upload_flow_manager.dart';
 
 import 'http_uploader.dart';
-import 'image_picker.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -48,13 +47,13 @@ class MyApp extends StatelessWidget {
                         decoration: BoxDecoration(border: Border.all()),
                         child: Uploader(
                           config: UploadConfig(
-                              previewGenerator: (String filepath) {
-                                return Image.file(File(filepath));
-                              },
-                              uploadManager: UploadManagerUsingHttp(
-                                  url: "http://127.0.0.1:5000/upload",
-                                  fileField: "file"),
-                              picker: gPickImages),
+                            previewGenerator: (String filepath) {
+                              return Image.file(File(filepath));
+                            },
+                            uploadManager: UploadManagerUsingHttp(
+                                url: "http://127.0.0.1:5000/upload",
+                                fileField: "file"),
+                          ),
                         ),
                       ),
                     ),

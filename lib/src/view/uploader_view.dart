@@ -6,6 +6,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../export/entity.dart';
 import '../export/status.dart';
+import '../export/uploader.dart';
 import '../model/candidates/candidates.dart';
 import '../export/config.dart';
 import '../model/menu.dart';
@@ -57,6 +58,7 @@ class _UploaderView extends ConsumerWidget {
     final viewImage = ref.watch(imageSelectionProvider);
     final spaceAvailable = ref.watch(spaceAvailableProvider);
     final UploadConfig cfg = ref.watch(uploadConfigProvider);
+    final uploadFlowFilePicker = ref.watch(uploadFlowFilePickerProvider);
 
     Menu menu = Menu(menuItems: [
       MenuItem(
@@ -69,7 +71,8 @@ class _UploaderView extends ConsumerWidget {
           iconData: MdiIcons.plus,
           label: "Add more",
           onSelection: () async {
-            List<String> candidates = await cfg.picker(context, ref);
+            List<String> candidates =
+                await uploadFlowFilePicker.pickItems(context, ref);
             if (candidates.isNotEmpty) {
               onSelectFiles();
               ref

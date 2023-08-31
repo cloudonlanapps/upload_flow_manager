@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'entity.dart';
@@ -33,8 +32,6 @@ class UploadConfig {
   final String pickerLabelMoreFiles;
   final String pickerLabel;
   final IconData pickerIconData;
-  final Future<List<String>> Function(BuildContext context, WidgetRef ref)
-      picker;
 
   final SliverGridDelegateWithMaxCrossAxisExtent gridDeligate =
       const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -46,7 +43,6 @@ class UploadConfig {
 
   UploadConfig({
     required this.previewGenerator,
-    required this.picker,
     String? pickerLabel,
     String? pickerLabelMoreFiles,
     IconData? pickerIconData,
