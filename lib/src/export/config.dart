@@ -153,7 +153,7 @@ typedef PickItems = Future<List<String>> Function(
   WidgetRef ref,
 );
 
-typedef GeneratePreview = Widget Function(
+typedef PreviewGenerator = Widget Function(
     BuildContext context, WidgetRef ref, String filepath);
 
 abstract class UploadHandler {

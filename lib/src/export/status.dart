@@ -1,12 +1,16 @@
 enum UploadStatus {
-  enqueued,
-  running,
-  complete,
-  notFound,
-  failed,
+  // Unsupported for future
+  // based on background downloader
   canceled,
   waitingToRetry,
-  paused;
+  paused,
+  notFound, // File not found when trying to upload // TODO
+
+  // Currently implemented using http
+  enqueued, // Waiting in the queue
+  running, // Uploading in progress
+  complete, // Upload successfully completed
+  failed; // Upload Failed
 
   bool get isFinalState {
     switch (this) {

@@ -43,7 +43,6 @@ class MyApp extends StatelessWidget {
                         decoration: BoxDecoration(border: Border.all()),
                         child: Uploader(
                           url: "http://127.0.0.1:5000/upload",
-                          fileField: "file",
                         ),
                       ),
                     ),

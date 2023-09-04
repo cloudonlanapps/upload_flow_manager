@@ -5,14 +5,14 @@ import '../default/http_uploader.dart';
 import '../default/pick_items.dart';
 import '../view/uploader_layout.dart';
 import '../model/config.dart';
-import 'upload_flow_callbacks.dart';
+import 'config.dart';
 
 class Uploader extends StatelessWidget {
   final String? url;
   final String? fileField;
   final UploadHandler? uploadHandler;
   final PickItems? pickItems;
-  final GeneratePreview? generatePreview;
+  final PreviewGenerator? previewGenerator;
   final UILabels? uiLabels;
 
   Uploader({
@@ -21,7 +21,7 @@ class Uploader extends StatelessWidget {
     this.fileField,
     this.uploadHandler,
     this.pickItems,
-    this.generatePreview,
+    this.previewGenerator,
     this.uiLabels,
   }) {
     if (url == null && uploadHandler == null) {
@@ -36,7 +36,7 @@ class Uploader extends StatelessWidget {
           uploadHandler: uploadHandler ??
               UploadManagerUsingHttp(url: url, fileField: fileField),
           pickItems: pickItems ?? defaultPickItems,
-          previewGenerator: generatePreview ?? defaultGeneratePreview,
+          previewGenerator: previewGenerator ?? defaultGeneratePreview,
           uiLabels: UILabelsNonNullable.fromUILabels(uiLabels)),
     );
   }

@@ -6,7 +6,7 @@ import 'package:sqlite3/sqlite3.dart';
 import '../db/entity_db.dart';
 import '../export/entity.dart';
 import '../export/status.dart';
-import '../export/upload_flow_callbacks.dart';
+import '../export/config.dart';
 import '../model/candidates/candiate.dart';
 
 class UploadQueueNotifier
