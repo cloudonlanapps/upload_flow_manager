@@ -5,9 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:upload_flow_manager/upload_flow_manager.dart';
 
 class UploadManagerUsingHttp extends UploadHandler {
-  UploadManagerUsingHttp({required url, fileField = "file"}) {
+  UploadManagerUsingHttp({required url, String? fileField}) {
     this.url = url;
-    this.fileField = fileField;
+    this.fileField = fileField ?? "file";
     onEvent.listen((event) async {
       if (!listererLock) {
         listererLock = true;

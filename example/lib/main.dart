@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upload_flow_manager/upload_flow_manager.dart';
+import 'dart:ffi';
+import 'dart:io';
+
+import 'package:path/path.dart';
+import 'package:sqlite3/open.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -43,6 +48,7 @@ class MyApp extends StatelessWidget {
                         decoration: BoxDecoration(border: Border.all()),
                         child: Uploader(
                           url: "http://127.0.0.1:5000/upload",
+                          sqlite3LibOverrider: sqlite3LibOverrider,
                         ),
                       ),
                     ),
@@ -58,4 +64,12 @@ class MyApp extends StatelessWidget {
           )),
     );
   }
+}
+
+sqlite3LibOverrider() {
+  final libraryNextToScript =
+      File(join('/lib/x86_64-linux-gnu/', 'libsqlite3.so.0'));
+
+  open.overrideFor(OperatingSystem.linux,
+      () => DynamicLibrary.open(libraryNextToScript.path));
 }

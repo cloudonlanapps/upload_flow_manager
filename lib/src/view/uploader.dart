@@ -19,8 +19,9 @@ class UploaderMain extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<Database> dbAsync = ref.watch(dbProvider);
     final UploadConfig cfg = ref.watch(uploadConfigProvider);
+    final AsyncValue<Database> dbAsync =
+        ref.watch(dbProvider(cfg.sqlite3LibOverrider));
     return dbAsync.when(
         data: (db) {
           return ProviderScope(observers: const [], overrides: [

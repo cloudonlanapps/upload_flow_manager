@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import '../export/config.dart';
+import '../default/uilabels.dart';
 import '../model/config.dart';
 
 import '../export/entity.dart';

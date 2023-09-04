@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../upload_flow_manager.dart';
+import '../default/uilabels.dart';
 import '../model/candidates/candidates.dart';
 import '../model/config.dart';
 import '../model/menu.dart';
