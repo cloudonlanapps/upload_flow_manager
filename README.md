@@ -94,6 +94,7 @@ Uploader({
   - [ ] Have a callback after every upload completed to update states on other part of the applications
   - [ ] Implement upload files shared through intend (on Mobiles)
   - [ ] Drag and drop fiels to upload
+  - [ ] Few text and laber are not configurable yet.
   
 ### Example
   - [ ] Provide an upload handler implementation using background_downloader.
