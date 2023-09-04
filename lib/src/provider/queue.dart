@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../db/entity_db.dart';
-import '../export/config.dart';
 import '../export/entity.dart';
 import '../export/status.dart';
+import '../export/upload_flow_callbacks.dart';
 import '../model/candidates/candiate.dart';
 
 class UploadQueueNotifier
@@ -73,8 +73,4 @@ final uploadQueueNotifierProvider =
 ) {
   throw Exception(
       "Upload Queue Provider is available only under Uploader Context");
-});
-
-final uploadConfigProvider = StateProvider<UploadConfig>((ref) {
-  throw Exception("Can only be accessed inside uploader context");
 });

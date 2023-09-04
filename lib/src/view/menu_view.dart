@@ -3,7 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../upload_flow_manager.dart';
 import '../model/menu.dart';
+import '../provider/config.dart';
 import 'popup_menu.dart';
 
 class MenuView extends ConsumerWidget {
@@ -15,6 +17,9 @@ class MenuView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final UILabelsNonNullable uiLabels =
+        ref.watch(uploadConfigProvider.select((value) => value.uiLabels));
+
     return Center(
       child: Container(
         margin:
@@ -47,6 +52,7 @@ class MenuView extends ConsumerWidget {
             if (menu.additionalMenuItems != null &&
                 menu.additionalMenuItems!.isNotEmpty)
               AdditionalMenu(
+                iconAdditionalMenu: uiLabels.additionalMenu.icon,
                 menuItems: menu.additionalMenuItems!,
               )
           ],

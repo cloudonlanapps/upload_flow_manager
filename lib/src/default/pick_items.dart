@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-Future<List<String>> gPickImages(
+Future<List<String>> defaultPickItems(
   BuildContext context,
   WidgetRef ref,
 ) async {

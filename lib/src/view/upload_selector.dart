@@ -2,13 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../export/config.dart';
+import '../model/config.dart';
 import '../export/entity.dart';
 import '../model/candidates/candidates.dart';
 import '../model/menu.dart';
 import '../provider/candidates.dart';
+import '../provider/config.dart';
 import '../provider/others.dart';
 import '../provider/queue.dart';
 import 'cl_tile.dart';
@@ -29,6 +29,7 @@ class UploadSelector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final UploadConfig cfg = ref.watch(uploadConfigProvider);
     final uploadCandidates =
         uploader.candidates.where((e) => e.isSelected).toList();
     final spaceAvailable = ref.watch(spaceAvailableProvider);
@@ -39,8 +40,8 @@ class UploadSelector extends ConsumerWidget {
     Menu menu = Menu(menuItems: [
       if (uploadCandidatesCount > 0)
         MenuItem(
-            iconData: MdiIcons.upload,
-            label: "Upload",
+            iconData: cfg.uiLabels.menuUpload.icon,
+            label: cfg.uiLabels.menuUpload.label,
             onSelection: () {
               ref
                   .read(uploadQueueNotifierProvider.notifier)
@@ -55,15 +56,15 @@ class UploadSelector extends ConsumerWidget {
     ], additionalMenuItems: [
       if (uploadCandidatesCount < totalCandidatesCount)
         MenuItem(
-            iconData: MdiIcons.selectMultipleMarker,
-            label: "Select All",
+            iconData: cfg.uiLabels.menuSelectAll.icon,
+            label: cfg.uiLabels.menuSelectAll.label,
             onSelection: () {
               ref.read(uploadCandidatesNotifierProvider.notifier).selectAll();
             }),
       if (uploadCandidatesCount > 0)
         MenuItem(
-            iconData: MdiIcons.selectionRemove,
-            label: "Select None",
+            iconData: cfg.uiLabels.menuSelectNone.icon,
+            label: cfg.uiLabels.menuSelectNone.label,
             onSelection: () {
               ref.read(uploadCandidatesNotifierProvider.notifier).selectNone();
             })
@@ -75,7 +76,8 @@ class UploadSelector extends ConsumerWidget {
           Align(
               alignment: Alignment.centerRight,
               child: IconButton(
-                  onPressed: onFileSelectionDone, icon: Icon(MdiIcons.close))),
+                  onPressed: onFileSelectionDone,
+                  icon: Icon(cfg.uiLabels.close.icon))),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(2.0),
@@ -83,7 +85,10 @@ class UploadSelector extends ConsumerWidget {
               fit: StackFit.expand,
               children: [
                 if (uploader.candidates.isEmpty)
-                  const CandidatePicker()
+                  CandidatePicker(
+                    label: cfg.uiLabels.pickerSelect.label,
+                    iconData: cfg.uiLabels.pickerSelect.icon,
+                  )
                 else
                   const CandidatesView(),
                 if (uploader.candidates.isNotEmpty && spaceAvailable)
@@ -104,7 +109,7 @@ class UploadSelector extends ConsumerWidget {
                   height: 32,
                   child: Center(
                       child: Text(
-                    "$uploadCandidatesCount of $totalCandidatesCount Selected to upload",
+                    "$uploadCandidatesCount of $totalCandidatesCount Selected to upload", //TODO: Part of label !
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onBackground,
                         overflow: TextOverflow.ellipsis),
@@ -118,8 +123,8 @@ class UploadSelector extends ConsumerWidget {
                   if (menu.additionalMenuItems?.isNotEmpty ?? false)
                     ...menu.additionalMenuItems!,
                   MenuItem(
-                      label: "Close",
-                      iconData: MdiIcons.close,
+                      label: cfg.uiLabels.close.label,
+                      iconData: cfg.uiLabels.close.icon,
                       onSelection: onFileSelectionDone)
                 ]))
             ],
@@ -142,7 +147,11 @@ class CandidatesView extends ConsumerWidget {
         itemCount: uploader.candidates.length + 1,
         itemBuilder: (BuildContext ctx, index) {
           if (index == uploader.candidates.length) {
-            return const CLTile(child: CandidatePicker());
+            return CLTile(
+                child: CandidatePicker(
+              label: cfg.uiLabels.pickerSelectMore.label,
+              iconData: cfg.uiLabels.pickerSelectMore.icon,
+            ));
           }
           final candidate = uploader.candidates[index];
           return UploadCandidateView(

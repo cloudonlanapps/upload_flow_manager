@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../export/config.dart';
-import '../export/uploader.dart';
+import '../model/config.dart';
 import '../provider/candidates.dart';
-import '../provider/queue.dart';
+import '../provider/config.dart';
 
 class CandidatePicker extends ConsumerWidget {
-  const CandidatePicker({
-    super.key,
-  });
+  final String label;
+  final IconData iconData;
+  const CandidatePicker(
+      {super.key, required this.label, required this.iconData});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final UploadConfig cfg = ref.watch(uploadConfigProvider);
-    final uploadFlowFilePicker = ref.watch(uploadFlowFilePickerProvider);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -22,16 +22,15 @@ class CandidatePicker extends ConsumerWidget {
           Flexible(
             child: IconButton(
               onPressed: () async {
-                List<String> candidates =
-                    await uploadFlowFilePicker.pickItems(context, ref);
+                List<String> candidates = await cfg.pickItems(context, ref);
                 ref
                     .read(uploadCandidatesNotifierProvider.notifier)
                     .add(candidates);
               },
-              icon: Icon(cfg.pickerIconData),
+              icon: Icon(iconData),
             ),
           ),
-          Text(cfg.pickerLabel),
+          Text(label),
         ],
       ),
     );

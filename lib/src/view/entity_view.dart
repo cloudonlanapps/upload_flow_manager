@@ -1,14 +1,15 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import '../export/config.dart';
+import '../export/upload_flow_callbacks.dart';
+import '../model/config.dart';
 
 import '../export/entity.dart';
 import '../export/status.dart';
-import '../provider/queue.dart';
+import '../provider/config.dart';
 import 'cl_tile.dart';
 
 class UploadEntityView extends ConsumerWidget {
@@ -36,7 +37,7 @@ class UploadEntityView extends ConsumerWidget {
                 child: Padding(
                     padding: const EdgeInsets.only(
                         top: 2, left: 2, right: 2, bottom: 2),
-                    child: cfg.previewGenerator(entity.path))),
+                    child: cfg.previewGenerator(context, ref, entity.path))),
             Positioned(
               right: 0,
               bottom: 0,
@@ -61,6 +62,7 @@ class UploadProgress extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final UploadConfig cfg = ref.watch(uploadConfigProvider);
     return Container(
         width: 24,
         height: 24,
@@ -68,10 +70,10 @@ class UploadProgress extends ConsumerWidget {
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)
             //more than 50% of width makes circle
             ),
-        child: getWidget(context));
+        child: getWidget(context, cfg.uiLabels));
   }
 
-  Widget getWidget(BuildContext context) {
+  Widget getWidget(BuildContext context, UILabelsNonNullable uiLabels) {
     return GestureDetector(
       onTap: () async {
         if (entity.serverResponse != null) {
@@ -97,21 +99,22 @@ class UploadProgress extends ConsumerWidget {
               circularStrokeCap: CircularStrokeCap.round,
               progressColor: Theme.of(context).colorScheme.primary,
             ),
-          UploadStatus.complete => Icon(MdiIcons.checkCircleOutline,
+          UploadStatus.complete => Icon(uiLabels.uploadStatusComplete.icon,
               color: Theme.of(context).colorScheme.primary),
 
           // Error scenarios
-          UploadStatus.notFound => Icon(MdiIcons.alertCircleCheckOutline,
+          UploadStatus.notFound => Icon(uiLabels.uploadUploadStatusError.icon,
               color: Theme.of(context).colorScheme.error),
-          UploadStatus.failed => Icon(MdiIcons.alphaEBoxOutline,
+          UploadStatus.failed => Icon(uiLabels.uploadUploadStatusError.icon,
               color: Theme.of(context).colorScheme.error),
-          UploadStatus.canceled => Icon(MdiIcons.cancel,
+          UploadStatus.canceled => Icon(uiLabels.uploadUploadStatusError.icon,
               color: Theme.of(context)
                   .colorScheme
                   .error), // Currently not supported
-          UploadStatus.waitingToRetry => Icon(MdiIcons.syncAlert,
+          UploadStatus.waitingToRetry => Icon(
+              uiLabels.uploadUploadStatusError.icon,
               color: Theme.of(context).colorScheme.error),
-          UploadStatus.paused => Icon(MdiIcons.pauseBoxOutline,
+          UploadStatus.paused => Icon(uiLabels.uploadUploadStatusError.icon,
               color: Theme.of(context).colorScheme.error),
         },
       ),

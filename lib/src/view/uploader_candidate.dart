@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
+import '../../upload_flow_manager.dart';
 import '../model/candidates/candiate.dart';
-import '../export/config.dart';
+import '../model/config.dart';
 import '../provider/candidates.dart';
-import '../provider/queue.dart';
+import '../provider/config.dart';
 import 'cl_tile.dart';
 
 class UploadCandidateView extends ConsumerWidget {
@@ -20,6 +19,7 @@ class UploadCandidateView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final UploadConfig cfg = ref.watch(uploadConfigProvider);
+    final UILabelsNonNullable uiLabels = cfg.uiLabels;
     return InkWell(
       onTap: () {
         ref
@@ -36,14 +36,14 @@ class UploadCandidateView extends ConsumerWidget {
                 child: Padding(
                     padding: const EdgeInsets.only(
                         top: 2, left: 2, right: 2, bottom: 2),
-                    child: cfg.previewGenerator(candidate.path))),
+                    child: cfg.previewGenerator(context, ref, candidate.path))),
             Positioned(
               bottom: 2,
               right: 8,
               child: Icon(
                 candidate.isSelected
-                    ? MdiIcons.checkboxMarkedOutline
-                    : MdiIcons.checkboxBlankOutline,
+                    ? uiLabels.itemIsSelected.icon
+                    : uiLabels.itemIsNotSelected.icon,
                 color: Theme.of(context).colorScheme.secondary,
               ),
             )

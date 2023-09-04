@@ -18,7 +18,7 @@ class LoadingView extends StatelessWidget {
           FittedBox(
             fit: BoxFit.scaleDown,
             child: ScalingText(
-              message ?? 'Loading ...',
+              message ?? 'Loading ...', //TODO: Part of label !
               style: Theme.of(context).textTheme.displayMedium,
             ),
           ),

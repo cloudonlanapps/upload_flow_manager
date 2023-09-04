@@ -1,11 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upload_flow_manager/upload_flow_manager.dart';
-
-import 'http_uploader.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -46,14 +42,8 @@ class MyApp extends StatelessWidget {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(border: Border.all()),
                         child: Uploader(
-                          config: UploadConfig(
-                            previewGenerator: (String filepath) {
-                              return Image.file(File(filepath));
-                            },
-                            uploadManager: UploadManagerUsingHttp(
-                                url: "http://127.0.0.1:5000/upload",
-                                fileField: "file"),
-                          ),
+                          url: "http://127.0.0.1:5000/upload",
+                          fileField: "file",
                         ),
                       ),
                     ),

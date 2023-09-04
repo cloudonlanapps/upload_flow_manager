@@ -2,15 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../export/entity.dart';
-import '../export/status.dart';
-import '../export/uploader.dart';
+import '../../upload_flow_manager.dart';
 import '../model/candidates/candidates.dart';
-import '../export/config.dart';
+import '../model/config.dart';
 import '../model/menu.dart';
 import '../provider/candidates.dart';
+import '../provider/config.dart';
 import '../provider/others.dart';
 import '../provider/queue.dart';
 import 'entity_view.dart';
@@ -55,24 +53,26 @@ class _UploaderView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final UILabelsNonNullable uiLabels =
+        ref.watch(uploadConfigProvider.select((value) => value.uiLabels));
     final viewImage = ref.watch(imageSelectionProvider);
     final spaceAvailable = ref.watch(spaceAvailableProvider);
     final UploadConfig cfg = ref.watch(uploadConfigProvider);
-    final uploadFlowFilePicker = ref.watch(uploadFlowFilePickerProvider);
 
     Menu menu = Menu(menuItems: [
       MenuItem(
-          iconData: MdiIcons.refresh,
-          label: "Refresh",
+          iconData: uiLabels.menuRetry.icon,
+          label: uiLabels.menuRetry.label,
           onSelection: () {
-            ref.read(uploadQueueNotifierProvider.notifier).refresh();
+            ref
+                .read(uploadQueueNotifierProvider.notifier)
+                .refresh(); // TODO: Change to retry
           }),
       MenuItem(
-          iconData: MdiIcons.plus,
-          label: "Add more",
+          iconData: uiLabels.pickerSelectMore.icon,
+          label: uiLabels.pickerSelectMore.label,
           onSelection: () async {
-            List<String> candidates =
-                await uploadFlowFilePicker.pickItems(context, ref);
+            List<String> candidates = await cfg.pickItems(context, ref);
             if (candidates.isNotEmpty) {
               onSelectFiles();
               ref
@@ -84,15 +84,15 @@ class _UploaderView extends ConsumerWidget {
       if (queue.any((element) => element.uploadStatus.isFinalState) ||
           queue.any((element) => element.uploadStatus == UploadStatus.enqueued))
         MenuItem(
-            iconData: MdiIcons.selectionRemove,
-            label: "Remove All",
+            iconData: uiLabels.menuRemoveAll.icon,
+            label: uiLabels.menuRemoveAll.label,
             onSelection: () {
               ref.read(uploadQueueNotifierProvider.notifier).removeAll();
             }),
       if (queue.any((element) => element.uploadStatus.isFinalState))
         MenuItem(
-            iconData: MdiIcons.selectionEllipseRemove,
-            label: "Remove Completed",
+            iconData: uiLabels.menuRemoveCompleted.icon,
+            label: uiLabels.menuRemoveCompleted.label,
             onSelection: () {
               ref.read(uploadQueueNotifierProvider.notifier).removeCompleted();
             })
@@ -136,7 +136,8 @@ class _UploaderView extends ConsumerWidget {
                         tag: viewImage,
                         child: AspectRatio(
                             aspectRatio: 1.0,
-                            child: cfg.previewGenerator(viewImage)),
+                            child:
+                                cfg.previewGenerator(context, ref, viewImage)),
                       ),
                     ),
                   ),
