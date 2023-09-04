@@ -1,81 +1,142 @@
 # Upload Flow Manager
 
-Uploading files from a local device to server involves multiple steps. This package streamlines those steps and provide a single widget.
+This package aims to simplify the process of uploading files from local devices to server, by providing a single widget.
 
 ## Features
 
 A single top level widget that handles the complete upload flow with following steps.
-* Pick one or many files using any picker of your choice. 
-* View the selected file, select or deselect items by looking at the preview (avoids accidental upload)
-* Use default http based uploader or implement uploader interface usign your favourite uploader.
-* Monitor and get status of
+* Pick one or many files using any picker of your choice.  (picker)
+* View the selected file, select or deselect items by looking at the preview (avoids accidental upload)  (preview generator)
+* Use default http based uploader or implement uploader interface using your favourite uploader. (upload handler)
+* Monitor and get status of each upload.
+
+Refer customization to configure any of the steps above.
+
+**This package uses Riverpod for managing states and sqlite3 for presistent state to preserve pending downloads across sessions and even after the application restarts.**
 
 ## Getting started
 
-Must include riverpod package and wrap the app with ProviderScope()
+1. Add the package to your `pubspec.yaml` file:
+
+  ```
+   flutter pub add upload_flow_manager
+  ```
+
+2. Add riverpod
+
+  ```
+   flutter pub add upload_flow_manager
+  ```
+
+3. Wrap the entire application in a "ProviderScope" widget.
+  ```dart
+  void main() {
+    runApp(
+      ProviderScope(
+        child: MyApp(),
+      ),
+    );
+  }
+  ```
+4. Import the package 
+   ```dart
+   import 'package:upload_flow_manager/upload_flow_manager.dart';
+  ```
+
+5. Use the Widget
+  ```dart
+  // Replace with your upload URL
+    Uploader(url: "<Your Upload URL>");   
+  ```
+
+For a simple usecase, the above must work without any customization / modification. Adjust the widget size (width, height) to make a clear view of the uploader.
+
+The URL must accept HTTP POST method and accept the file in multipart in a file given in FileField or default to 'file'
 
 ## Usage
 
-### Implememnt picker
-Implement  gPickImages()
+The Uploader Widget provides parameters for customization.
+
+* To replace gpicker, use pickItems.
+* To replace the preview generator, use previewGenerator
+* To replace the uploader (which is implemetned using http), extend UploadHandler class and implement, and pass a UploadHandler instance uploadHandler. In this case, you don't need to pass the url.
+  * If the requirement is only to use differnt field name for file, you may pass it using fileField.
+* To change the language / text used in the interface, override necessary LabeledIcons through uiLabels parameter
 
 ```dart
-Future<List<String>> gPickImages(
-  BuildContext context,
-  WidgetRef ref,
-)
-{
+Uploader({
+    url: /*<url, required if uploadHandler is null>*/,
+    fileField /* default to 'file' */,
+    this.uploadHandler /* Extending UploadHandler class with differnt upload functionality */,
+    this.pickItems /* Default to image picker */,
+    this.previewGenerator /* Default to image preview */,
+    this.uiLabels /*Default text internally generated*/,
+  })
 
+```
+
+## Pending task
+
+### Library
+  - [ ] sqlite3 open.overrideFor should be done in a callback.   
+
+  **On HTTP Uploader**
+
+  - [X] move http implementation as internal and default upload handler
+    - [ ] Retry failed cases
+    - [ ] Retry all pending when restarted.
+    - [ ] Implement background task that runs even after the app is closed. 
+
+  **On UI**
+
+  - [ ] Alternate list based interface along with current grid based 
+  - [ ] Allow the application to add auxilary information for upload
+  - [ ] Have a callback after every upload completed to update states on other part of the applications
+  - [ ] Implement upload files shared through intend (on Mobiles)
+  - [ ] Drag and drop fiels to upload
+  
+### Example
+  - [ ] Provide an upload handler implementation using background_downloader.
+  - [ ] Along with images, also implement files uploader
+  - [ ] Handle non-image previews
+  
+## Additional Informations
+
+### Manually providing sqlite3 libraries 
+on some devices,  the sqlite3 may not be available in default location or you may ship a sqlite3 library with your application. On this situations, sqlite3 provides an option to override the way the sqlite3 package looks for the library.
+
+In this situation, this package provide a pass thru to sqlite3 library.  
+
+Here is an example provided for Linux.
+
+Install packages `path` and `sqlite3`.
+
+Implement the override and pass it to the Uploader.
+
+```dart
+import 'package:path/path.dart';
+import 'package:sqlite3/open.dart';
+
+sqlite3LibOverrider() {
+  final libraryNextToScript =
+      File(join('/lib/x86_64-linux-gnu/', 'libsqlite3.so.0'));
+
+  open.overrideFor(OperatingSystem.linux,
+      () => DynamicLibrary.open(libraryNextToScript.path));
 }
 ```
-Refer `example/lib/image_picker.dart` for a example implementation using image_picker.
-
-### Implement previewGenerator
-
-This module is kept as part of the application so that many kind of files can be handled. You may either return a icon or a image that represents the file selected. 
-
-### Caling widget
-
-Now call the widget as below with a UploadConfig widget. 
+ 
 ```dart
+
   Uploader(
-        config: UploadConfig(
-            previewGenerator: (String filepath) {
-              return Image.file(File(filepath));
-            },
-            uploadManager: UploadManagerUsingHttp(
-                url: "http://127.0.0.1:5000/upload",
-                fileField: "file"),
-            picker: gPickImages),
-      ),
-    )
+    ...
+    sqlite3LibOverrider: sqlite3LibOverrider,
+  )
+
 ```
 
-## Customization
+### Test Server
+If your server is not ready while implementing the app or it can't be used for testing,  you may use the Python Flask based example server provided in this package.
+Refer `example/server/README.md` for staring it.
+The API to upload a file into this server is `http://127.0.0.1:5000/upload`
 
-### Example Server
- To test the package, a Python flask based server is provided in example/server.
- Refer `example/server/README.md` for staring it.
-
-## Additional information
-
-### Implementation details
-This package uses Riverpod for managing states and sqlite3 for presistent state.
-This helps to preserve pending downloads across sessions and even after the application restarts.
-
-### Pending task
-#### Library
-  1. sqlite3 open.overrideFor should be done in a callback.
-  2. move http implementation as internal and default upload handler
-  3. Alternate list based interface along with current grid based
-  4. Retry failed cases
-  5. Retry all pending when restarted.
-  6. Implement background task that runs even after the app is closed. 
-  7. Allow the application to add auxilary information for upload
-  8. Have a callback after every upload completed to update states on other part of the applications
-
-### Example
-  1. Provide an upload handler implementation using background_downloader.
-  2. Along with images, also implement files uploader
-  3. Handle non-image previews
-  
