@@ -21,8 +21,8 @@ class UploaderLayout extends StatelessWidget {
           overrides: [
             spaceAvailableProvider.overrideWith((ref) =>
                 (constraints.maxHeight >= 150 && constraints.maxWidth >= 200)
-                    ? false
-                    : true),
+                    ? true
+                    : false),
             uploadConfigProvider.overrideWith((ref) => uploadConfig)
           ],
           child: const UploaderMain(),
