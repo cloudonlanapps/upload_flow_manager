@@ -1,6 +1,6 @@
 name: upload_flow_manager
 description: A UI Package for manageing upload flow
-version: 0.0.2
+version: 0.0.3
 homepage: https://www.cloudonlanapps.com
 
 environment:
