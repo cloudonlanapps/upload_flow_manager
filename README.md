@@ -25,7 +25,7 @@ Refer customization to configure any of the steps above.
 2. Add riverpod
 
   ```
-   flutter pub add upload_flow_manager
+   flutter pub add flutter_riverpod
   ```
 
 3. Wrap the entire application in a "ProviderScope" widget.
