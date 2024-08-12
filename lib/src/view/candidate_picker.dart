@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uploader/uploader.dart';
 
 import '../model/config.dart';
-import '../provider/candidates.dart';
+
 import '../provider/config.dart';
 
 class CandidatePicker extends ConsumerWidget {

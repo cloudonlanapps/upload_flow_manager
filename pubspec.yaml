@@ -2,6 +2,7 @@ name: upload_flow_manager
 description: A UI Package for manageing upload flow
 version: 0.0.3
 homepage: https://www.cloudonlanapps.com
+publish_to: none
 
 environment:
   sdk: '>=3.0.6 <4.0.0'
@@ -23,6 +24,8 @@ dependencies:
   adaptive_dialog: ^1.9.0
   image_picker: ^1.0.4
   http: ^1.1.0
+  uploader:
+    path: ./uploader
 
 dev_dependencies:
   flutter_test:

@@ -2,8 +2,8 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../model/candidates/candiate.dart';
-import '../model/candidates/candidates.dart';
+import '../models/candidates/candiate.dart';
+import '../models/candidates/candidates.dart';
 
 class UploadCandidatesNotifier extends StateNotifier<Candidates> {
   UploadCandidatesNotifier() : super(Candidates());

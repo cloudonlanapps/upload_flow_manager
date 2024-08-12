@@ -7,7 +7,7 @@ import '../db/entity_db.dart';
 import '../export/entity.dart';
 import '../export/status.dart';
 import '../export/config.dart';
-import '../model/candidates/candiate.dart';
+import '../models/candidates/candiate.dart';
 
 class UploadQueueNotifier
     extends StateNotifier<AsyncValue<List<UploadEntity>>> {

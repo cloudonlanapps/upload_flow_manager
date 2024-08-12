@@ -2,7 +2,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import '../export/entity.dart';
 import '../export/status.dart';
-import '../model/candidates/candiate.dart';
+import '../models/candidates/candiate.dart';
 
 extension EntityDB on UploadEntity {
   static const _tableName = 'upload_entities';

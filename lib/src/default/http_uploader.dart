@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:upload_flow_manager/upload_flow_manager.dart';
+
+import 'package:uploader/uploader.dart';
 
 class UploadManagerUsingHttp extends UploadHandler {
   UploadManagerUsingHttp({required url, String? fileField}) {

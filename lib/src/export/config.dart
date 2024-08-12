@@ -2,9 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'entity.dart';
-import 'status.dart';
-
 class LabeledIcon {
   String label;
   IconData icon;
@@ -52,10 +49,6 @@ class UILabels {
   });
 }
 
-typedef UpdateStatusFn = void Function(int taskId,
-    {required UploadStatus status, String? response});
-typedef UpdateProgress = void Function(int taskId, double progress);
-
 typedef PickItems = Future<List<String>> Function(
   BuildContext context,
   WidgetRef ref,
@@ -63,25 +56,3 @@ typedef PickItems = Future<List<String>> Function(
 
 typedef PreviewGenerator = Widget Function(
     BuildContext context, WidgetRef ref, String filepath);
-
-abstract class UploadHandler {
-  late String url;
-  late String fileField;
-  UpdateStatusFn? updateStatus;
-  UpdateProgress? updateProgress;
-
-  void onSubscribe({
-    UpdateStatusFn? updateStatus,
-    UpdateProgress? updateProgress,
-  }) {
-    this.updateStatus = updateStatus;
-    this.updateProgress = updateProgress;
-  }
-
-  void onCancelSubscribe() {
-    updateStatus = null;
-    updateProgress = null;
-  }
-
-  Future<void> scheduleUpload(UploadEntity entity);
-}

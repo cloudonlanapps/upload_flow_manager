@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uploader/export/config.dart';
 
 import '../default/generate_preview.dart';
 import '../default/http_uploader.dart';

@@ -5,44 +5,55 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../db/db.dart';
-import '../model/config.dart';
-import '../provider/config.dart';
-import '../provider/queue.dart';
-import 'error.dart';
-import 'loading.dart';
-import 'uploader_view.dart';
 
-class UploaderMain extends ConsumerWidget {
-  const UploaderMain({
+import '../export/config.dart';
+
+import '../providers/queue.dart';
+
+class UploaderScope extends ConsumerWidget {
+  const UploaderScope({
     super.key,
+    required this.child,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    required this.uploadHandler,
+    this.sqlite3LibOverrider,
   });
+  final Widget child;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
+  final UploadHandler uploadHandler;
+  final Function()? sqlite3LibOverrider;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final UploadConfig cfg = ref.watch(uploadConfigProvider);
     final AsyncValue<Database> dbAsync =
-        ref.watch(dbProvider(cfg.sqlite3LibOverrider));
+        ref.watch(dbProvider(sqlite3LibOverrider));
     return dbAsync.when(
         data: (db) {
           return ProviderScope(observers: const [], overrides: [
             uploadQueueNotifierProvider.overrideWith((ref) {
               final notifier = UploadQueueNotifier(
-                  uploadManager: cfg.uploadHandler, database: db);
-              cfg.uploadHandler.onSubscribe(
+                  uploadManager: uploadHandler, database: db);
+              uploadHandler.onSubscribe(
                 updateProgress: notifier.updateProgress,
                 updateStatus: notifier.updateStatus,
               );
               ref.onDispose(() {
-                cfg.uploadHandler.onCancelSubscribe();
+                uploadHandler.onCancelSubscribe();
               });
 
               return notifier;
             }),
-          ], child: const UploaderView());
+          ], child: child);
         },
-        error: (err, _) {
-          return ErrorView(errorMessage: err.toString());
-        },
-        loading: () => const LoadingView());
+        error: errorBuilder,
+        loading: loadingBuilder);
   }
 }
+
+/*
+
+
+
+*/

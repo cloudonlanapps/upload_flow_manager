@@ -2,24 +2,24 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uploader/uploader.dart';
 
-import '../../upload_flow_manager.dart';
 import '../default/uilabels.dart';
-import '../model/candidates/candidates.dart';
+
 import '../model/config.dart';
 import '../model/menu.dart';
-import '../provider/candidates.dart';
+
 import '../provider/config.dart';
 import '../provider/others.dart';
-import '../provider/queue.dart';
+
 import 'entity_view.dart';
 import 'error.dart';
 import 'loading.dart';
 import 'upload_selector.dart';
 import 'menu_view.dart';
 
-class UploaderView extends ConsumerWidget {
-  const UploaderView({super.key});
+class UploaderUIView extends ConsumerWidget {
+  const UploaderUIView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -130,7 +130,7 @@ class _UploaderView extends ConsumerWidget {
                     decoration: BoxDecoration(
                         color: Theme.of(context)
                             .colorScheme
-                            .onBackground
+                            .onSurface
                             .withAlpha(128)),
                     child: Center(
                       child: Hero(

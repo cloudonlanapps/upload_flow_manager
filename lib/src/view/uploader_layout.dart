@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uploader/uploader.dart';
 
 import '../model/config.dart';
 import '../provider/config.dart';
 import '../provider/others.dart';
-import '../view/uploader.dart';
+import 'error.dart';
+import 'loading.dart';
+import 'uploader_view.dart';
 
 class UploaderLayout extends StatelessWidget {
   final UploadConfig uploadConfig;
@@ -25,9 +28,19 @@ class UploaderLayout extends StatelessWidget {
                     : false),
             uploadConfigProvider.overrideWith((ref) => uploadConfig)
           ],
-          child: const UploaderMain(),
+          child: UploaderScope(
+            errorBuilder: (err, _) {
+              return ErrorView(errorMessage: err.toString());
+            },
+            loadingBuilder: () => const LoadingView(),
+            uploadHandler: uploadConfig.uploadHandler,
+            sqlite3LibOverrider: uploadConfig.sqlite3LibOverrider,
+            child: const UploaderUIView(),
+          ),
         );
       },
     );
   }
 }
+
+//final UploadConfig cfg = ref.watch(uploadConfigProvider);

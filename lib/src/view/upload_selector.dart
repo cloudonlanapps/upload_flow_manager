@@ -2,15 +2,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uploader/uploader.dart';
 
 import '../model/config.dart';
-import '../export/entity.dart';
-import '../model/candidates/candidates.dart';
+
 import '../model/menu.dart';
-import '../provider/candidates.dart';
+
 import '../provider/config.dart';
 import '../provider/others.dart';
-import '../provider/queue.dart';
+
 import 'cl_tile.dart';
 import 'uploader_candidate.dart';
 import 'candidate_picker.dart';
@@ -111,7 +111,7 @@ class UploadSelector extends ConsumerWidget {
                       child: Text(
                     "$uploadCandidatesCount of $totalCandidatesCount Selected to upload", //TODO: Part of label !
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onBackground,
+                        color: Theme.of(context).colorScheme.onSurface,
                         overflow: TextOverflow.ellipsis),
                   )),
                 ),
