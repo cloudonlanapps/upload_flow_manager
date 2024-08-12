@@ -6,10 +6,10 @@ import 'package:uploader/uploader.dart';
 
 import '../default/uilabels.dart';
 
-import '../model/config.dart';
+import '../model/customizer.dart';
 import '../model/menu.dart';
 
-import '../provider/config.dart';
+import '../provider/customizer.dart';
 import '../provider/others.dart';
 
 import 'entity_view.dart';
@@ -55,10 +55,10 @@ class _UploaderView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final UILabelsNonNullable uiLabels =
-        ref.watch(uploadConfigProvider.select((value) => value.uiLabels));
+        ref.watch(uiViewCustomizerProvider.select((value) => value.uiLabels));
     final viewImage = ref.watch(imageSelectionProvider);
     final spaceAvailable = ref.watch(spaceAvailableProvider);
-    final UploadConfig cfg = ref.watch(uploadConfigProvider);
+    final UIViewCustomizer cfg = ref.watch(uiViewCustomizerProvider);
 
     Menu menu = Menu(menuItems: [
       MenuItem(

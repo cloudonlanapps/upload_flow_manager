@@ -6,9 +6,9 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:uploader/uploader.dart';
 import '../default/uilabels.dart';
-import '../model/config.dart';
+import '../model/customizer.dart';
 
-import '../provider/config.dart';
+import '../provider/customizer.dart';
 import 'cl_tile.dart';
 
 class UploadEntityView extends ConsumerWidget {
@@ -22,7 +22,7 @@ class UploadEntityView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     /* previewGenerator: CLImageView(clImage: candidate.image)*/
-    final UploadConfig cfg = ref.watch(uploadConfigProvider);
+    final UIViewCustomizer cfg = ref.watch(uiViewCustomizerProvider);
     return InkWell(
       onTap: () {
         ref.read(imageSelectionProvider.notifier).onTapImage(entity.path);
@@ -61,7 +61,7 @@ class UploadProgress extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final UploadConfig cfg = ref.watch(uploadConfigProvider);
+    final UIViewCustomizer cfg = ref.watch(uiViewCustomizerProvider);
     return Container(
         width: 24,
         height: 24,

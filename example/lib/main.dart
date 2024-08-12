@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
                         margin: const EdgeInsets.all(8),
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(border: Border.all()),
-                        child: Uploader(
+                        child: MediaUploader(
                           url: "http://127.0.0.1:5000/upload",
                           sqlite3LibOverrider: sqlite3LibOverrider,
                         ),

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../model/config.dart';
+import '../model/customizer.dart';
 
-final uploadConfigProvider = StateProvider<UploadConfig>((ref) {
+final uiViewCustomizerProvider = StateProvider<UIViewCustomizer>((ref) {
   throw Exception("Can only be accessed inside uploader context");
 });

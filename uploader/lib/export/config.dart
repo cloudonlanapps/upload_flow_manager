@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../export/entity.dart';
 import 'status.dart';
 
@@ -25,4 +27,17 @@ abstract class UploadHandler {
   }
 
   Future<void> scheduleUpload(UploadEntity entity);
+}
+
+@immutable
+class UploadConfig {
+  final String? url;
+  final String? fileField;
+  final UploadHandler? uploadHandler;
+  final Function()? sqlite3LibOverrider;
+  const UploadConfig(
+      {this.uploadHandler,
+      required this.sqlite3LibOverrider,
+      this.url,
+      this.fileField});
 }

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uploader/uploader.dart';
 
-import '../model/config.dart';
+import '../model/customizer.dart';
 
-import '../provider/config.dart';
+import '../provider/customizer.dart';
 
 class CandidatePicker extends ConsumerWidget {
   final String label;
@@ -14,7 +14,7 @@ class CandidatePicker extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final UploadConfig cfg = ref.watch(uploadConfigProvider);
+    final UIViewCustomizer cfg = ref.watch(uiViewCustomizerProvider);
 
     return Center(
       child: Column(

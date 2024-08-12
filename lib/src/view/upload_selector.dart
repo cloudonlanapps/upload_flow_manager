@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uploader/uploader.dart';
 
-import '../model/config.dart';
+import '../model/customizer.dart';
 
 import '../model/menu.dart';
 
-import '../provider/config.dart';
+import '../provider/customizer.dart';
 import '../provider/others.dart';
 
 import 'cl_tile.dart';
@@ -29,7 +29,7 @@ class UploadSelector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final UploadConfig cfg = ref.watch(uploadConfigProvider);
+    final UIViewCustomizer cfg = ref.watch(uiViewCustomizerProvider);
     final uploadCandidates =
         uploader.candidates.where((e) => e.isSelected).toList();
     final spaceAvailable = ref.watch(spaceAvailableProvider);
@@ -139,7 +139,7 @@ class CandidatesView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final UploadConfig cfg = ref.watch(uploadConfigProvider);
+    final UIViewCustomizer cfg = ref.watch(uiViewCustomizerProvider);
     final Candidates uploader = ref.watch(uploadCandidatesNotifierProvider);
     //uploader.candidates.length + (candiatePicker != null ? 1 : 0,);
     return GridView.builder(

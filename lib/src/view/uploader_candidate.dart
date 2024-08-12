@@ -4,9 +4,9 @@ import 'package:uploader/uploader.dart';
 
 import '../default/uilabels.dart';
 
-import '../model/config.dart';
+import '../model/customizer.dart';
 
-import '../provider/config.dart';
+import '../provider/customizer.dart';
 import 'cl_tile.dart';
 
 class UploadCandidateView extends ConsumerWidget {
@@ -19,7 +19,7 @@ class UploadCandidateView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final UploadConfig cfg = ref.watch(uploadConfigProvider);
+    final UIViewCustomizer cfg = ref.watch(uiViewCustomizerProvider);
     final UILabelsNonNullable uiLabels = cfg.uiLabels;
     return InkWell(
       onTap: () {

@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:uploader/export/config.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:uploader/uploader.dart';
 
 import '../default/generate_preview.dart';
-import '../default/http_uploader.dart';
+
 import '../default/pick_items.dart';
 import '../default/uilabels.dart';
-import '../view/uploader_layout.dart';
-import '../model/config.dart';
+import '../provider/customizer.dart';
+import '../provider/others.dart';
+import '../view/error.dart';
+import '../view/loading.dart';
+
+import '../model/customizer.dart';
+import '../view/uploader_view.dart';
 import 'config.dart';
 
-class Uploader extends StatelessWidget {
+class MediaUploader extends StatelessWidget {
   final String? url;
   final String? fileField;
   final UploadHandler? uploadHandler;
@@ -18,7 +25,7 @@ class Uploader extends StatelessWidget {
   final UILabels? uiLabels;
   final Function()? sqlite3LibOverrider;
 
-  Uploader({
+  MediaUploader({
     super.key,
     this.url,
     this.fileField,
@@ -35,14 +42,34 @@ class Uploader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UploaderLayout(
-      uploadConfig: UploadConfig(
-          uploadHandler: uploadHandler ??
-              UploadManagerUsingHttp(url: url, fileField: fileField),
-          pickItems: pickItems ?? defaultPickItems,
-          previewGenerator: previewGenerator ?? defaultGeneratePreview,
-          uiLabels: UILabelsNonNullable.fromUILabels(uiLabels),
-          sqlite3LibOverrider: sqlite3LibOverrider),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return ProviderScope(
+          overrides: [
+            spaceAvailableProvider.overrideWith((ref) =>
+                (constraints.maxHeight >= 150 && constraints.maxWidth >= 200)
+                    ? true
+                    : false),
+            uiViewCustomizerProvider.overrideWith((ref) => UIViewCustomizer(
+                  pickItems: pickItems ?? defaultPickItems,
+                  previewGenerator: previewGenerator ?? defaultGeneratePreview,
+                  uiLabels: UILabelsNonNullable.fromUILabels(uiLabels),
+                ))
+          ],
+          child: CLUploader(
+            errorBuilder: (err, _) {
+              return ErrorView(errorMessage: err.toString());
+            },
+            loadingBuilder: () => const LoadingView(),
+            uploadConfig: UploadConfig(
+                url: url,
+                fileField: fileField,
+                uploadHandler: uploadHandler,
+                sqlite3LibOverrider: sqlite3LibOverrider),
+            builder: () => const UploaderUIView(),
+          ),
+        );
+      },
     );
   }
 }

@@ -6,31 +6,33 @@ import 'package:sqlite3/sqlite3.dart';
 
 import '../db/db.dart';
 
+import '../defaults/http_uploader.dart';
 import '../export/config.dart';
 
 import '../providers/queue.dart';
 
-class UploaderScope extends ConsumerWidget {
-  const UploaderScope({
+class CLUploader extends ConsumerWidget {
+  const CLUploader({
     super.key,
-    required this.child,
+    required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    required this.uploadHandler,
-    this.sqlite3LibOverrider,
+    required this.uploadConfig,
   });
-  final Widget child;
+  final Widget Function() builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final UploadHandler uploadHandler;
-  final Function()? sqlite3LibOverrider;
+  final UploadConfig uploadConfig;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<Database> dbAsync =
-        ref.watch(dbProvider(sqlite3LibOverrider));
+        ref.watch(dbProvider(uploadConfig.sqlite3LibOverrider));
     return dbAsync.when(
         data: (db) {
+          final uploadHandler = uploadConfig.uploadHandler ??
+              UploadManagerUsingHttp(
+                  url: uploadConfig.url, fileField: uploadConfig.fileField);
           return ProviderScope(observers: const [], overrides: [
             uploadQueueNotifierProvider.overrideWith((ref) {
               final notifier = UploadQueueNotifier(
@@ -45,7 +47,7 @@ class UploaderScope extends ConsumerWidget {
 
               return notifier;
             }),
-          ], child: child);
+          ], child: builder());
         },
         error: errorBuilder,
         loading: loadingBuilder);

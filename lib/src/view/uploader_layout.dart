@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uploader/uploader.dart';
 
-import '../model/config.dart';
-import '../provider/config.dart';
+import '../model/customizer.dart';
+
+import '../provider/customizer.dart';
 import '../provider/others.dart';
 import 'error.dart';
 import 'loading.dart';
 import 'uploader_view.dart';
 
 class UploaderLayout extends StatelessWidget {
+  final UIViewCustomizer viewCustomizer;
   final UploadConfig uploadConfig;
   const UploaderLayout({
     super.key,
+    required this.viewCustomizer,
     required this.uploadConfig,
   });
 
@@ -26,16 +29,15 @@ class UploaderLayout extends StatelessWidget {
                 (constraints.maxHeight >= 150 && constraints.maxWidth >= 200)
                     ? true
                     : false),
-            uploadConfigProvider.overrideWith((ref) => uploadConfig)
+            uiViewCustomizerProvider.overrideWith((ref) => viewCustomizer)
           ],
-          child: UploaderScope(
+          child: CLUploader(
             errorBuilder: (err, _) {
               return ErrorView(errorMessage: err.toString());
             },
             loadingBuilder: () => const LoadingView(),
-            uploadHandler: uploadConfig.uploadHandler,
-            sqlite3LibOverrider: uploadConfig.sqlite3LibOverrider,
-            child: const UploaderUIView(),
+            uploadConfig: uploadConfig,
+            builder: () => const UploaderUIView(),
           ),
         );
       },

@@ -5,7 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../default/uilabels.dart';
 import '../model/menu.dart';
-import '../provider/config.dart';
+
+import '../provider/customizer.dart';
 import 'popup_menu.dart';
 
 class MenuView extends ConsumerWidget {
@@ -18,7 +19,7 @@ class MenuView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final UILabelsNonNullable uiLabels =
-        ref.watch(uploadConfigProvider.select((value) => value.uiLabels));
+        ref.watch(uiViewCustomizerProvider.select((value) => value.uiLabels));
 
     return Center(
       child: Container(
