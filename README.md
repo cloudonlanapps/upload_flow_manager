@@ -38,14 +38,18 @@ Refer customization to configure any of the steps above.
     );
   }
   ```
+
 4. Import the package 
    ```dart
    import 'package:upload_flow_manager/upload_flow_manager.dart';
-  ```
+   
+   ```
+  
 
 5. Use the Widget
+
   ```dart
-  // Replace with your upload URL
+     // Replace with your upload URL
     Uploader(url: "<Your Upload URL>");   
   ```
 
