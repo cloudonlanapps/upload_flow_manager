@@ -30,7 +30,7 @@ class Candidates {
     return Candidates(
       allUploaded: false,
       candidates: [
-        ...{...candidates, ...uniqueCandidates}
+        ...{...candidates, ...uniqueCandidates},
       ],
     );
   }
@@ -56,7 +56,7 @@ class Candidates {
     return candidates.where((element) => element.isSelected).toList();
   }
 
-  toggleSelection(Candidate candidate) {
+  Candidates toggleSelection(Candidate candidate) {
     return copyWith(
       candidates: candidates
           .map(

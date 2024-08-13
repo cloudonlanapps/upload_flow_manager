@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uploader/uploader.dart';
 
+import '../model/candidates.dart';
 import '../model/customizer.dart';
 
 import '../model/menu.dart';
@@ -12,6 +13,7 @@ import '../provider/customizer.dart';
 import '../provider/others.dart';
 
 import 'cl_tile.dart';
+import 'uploader.dart';
 import 'uploader_candidate.dart';
 import 'candidate_picker.dart';
 import 'menu_view.dart';
@@ -19,11 +21,11 @@ import 'menu_view.dart';
 class UploadSelector extends ConsumerWidget {
   final List<UploadEntity> queue;
   final Function() onFileSelectionDone;
-  final Candidates uploader;
+  final Candidates candidates;
   const UploadSelector({
     super.key,
     required this.queue,
-    required this.uploader,
+    required this.candidates,
     required this.onFileSelectionDone,
   });
 
@@ -31,11 +33,11 @@ class UploadSelector extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final UIViewCustomizer cfg = ref.watch(uiViewCustomizerProvider);
     final uploadCandidates =
-        uploader.candidates.where((e) => e.isSelected).toList();
+        candidates.candidates.where((e) => e.isSelected).toList();
     final spaceAvailable = ref.watch(spaceAvailableProvider);
     final int uploadCandidatesCount =
-        uploader.candidates.where((e) => e.isSelected).length;
-    final int totalCandidatesCount = uploader.candidates.length;
+        candidates.candidates.where((e) => e.isSelected).length;
+    final int totalCandidatesCount = candidates.candidates.length;
 
     Menu menu = Menu(menuItems: [
       if (uploadCandidatesCount > 0)
@@ -43,12 +45,7 @@ class UploadSelector extends ConsumerWidget {
             iconData: cfg.uiLabels.menuUpload.icon,
             label: cfg.uiLabels.menuUpload.label,
             onSelection: () {
-              ref
-                  .read(uploadQueueNotifierProvider.notifier)
-                  .addCandidates(uploadCandidates);
-              final allUploaded = ref
-                  .read(uploadCandidatesNotifierProvider.notifier)
-                  .removeSelected();
+              final allUploaded = CLUploader.onUpload(ref, uploadCandidates);
               if (allUploaded) {
                 onFileSelectionDone();
               }
@@ -59,14 +56,14 @@ class UploadSelector extends ConsumerWidget {
             iconData: cfg.uiLabels.menuSelectAll.icon,
             label: cfg.uiLabels.menuSelectAll.label,
             onSelection: () {
-              ref.read(uploadCandidatesNotifierProvider.notifier).selectAll();
+              CLUploader.onSelectAll(ref);
             }),
       if (uploadCandidatesCount > 0)
         MenuItem(
             iconData: cfg.uiLabels.menuSelectNone.icon,
             label: cfg.uiLabels.menuSelectNone.label,
             onSelection: () {
-              ref.read(uploadCandidatesNotifierProvider.notifier).selectNone();
+              CLUploader.onClearSelection(ref);
             })
     ]);
 
@@ -84,14 +81,16 @@ class UploadSelector extends ConsumerWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                if (uploader.candidates.isEmpty)
+                if (candidates.candidates.isEmpty)
                   CandidatePicker(
                     label: cfg.uiLabels.pickerSelect.label,
                     iconData: cfg.uiLabels.pickerSelect.icon,
                   )
                 else
-                  const CandidatesView(),
-                if (uploader.candidates.isNotEmpty && spaceAvailable)
+                  CandidatesView(
+                    candidates: candidates,
+                  ),
+                if (candidates.candidates.isNotEmpty && spaceAvailable)
                   Positioned(
                       bottom: 0,
                       left: 0,
@@ -116,7 +115,7 @@ class UploadSelector extends ConsumerWidget {
                   )),
                 ),
               ),
-              if (uploader.candidates.isNotEmpty && !spaceAvailable)
+              if (candidates.candidates.isNotEmpty && !spaceAvailable)
                 MenuView(
                     menu: Menu(menuItems: [], additionalMenuItems: [
                   ...menu.menuItems,
@@ -135,25 +134,26 @@ class UploadSelector extends ConsumerWidget {
 }
 
 class CandidatesView extends ConsumerWidget {
-  const CandidatesView({super.key});
+  const CandidatesView({super.key, required this.candidates});
+  final Candidates candidates;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final UIViewCustomizer cfg = ref.watch(uiViewCustomizerProvider);
-    final Candidates uploader = ref.watch(uploadCandidatesNotifierProvider);
+
     //uploader.candidates.length + (candiatePicker != null ? 1 : 0,);
     return GridView.builder(
         gridDelegate: cfg.gridDeligate,
-        itemCount: uploader.candidates.length + 1,
+        itemCount: candidates.candidates.length + 1,
         itemBuilder: (BuildContext ctx, index) {
-          if (index == uploader.candidates.length) {
+          if (index == candidates.candidates.length) {
             return CLTile(
                 child: CandidatePicker(
               label: cfg.uiLabels.pickerSelectMore.label,
               iconData: cfg.uiLabels.pickerSelectMore.icon,
             ));
           }
-          final candidate = uploader.candidates[index];
+          final candidate = candidates.candidates[index];
           return UploadCandidateView(
             candidate: candidate,
           );

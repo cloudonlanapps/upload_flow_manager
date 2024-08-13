@@ -25,7 +25,7 @@ class UploadEntityView extends ConsumerWidget {
     final UIViewCustomizer cfg = ref.watch(uiViewCustomizerProvider);
     return InkWell(
       onTap: () {
-        ref.read(imageSelectionProvider.notifier).onTapImage(entity.path);
+        ref.read(imageSelectionProvider.notifier).onTapImage(entity.itemJson);
       },
       child: CLTile(
         //backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(200),
@@ -36,7 +36,8 @@ class UploadEntityView extends ConsumerWidget {
                 child: Padding(
                     padding: const EdgeInsets.only(
                         top: 2, left: 2, right: 2, bottom: 2),
-                    child: cfg.previewGenerator(context, ref, entity.path))),
+                    child:
+                        cfg.previewGenerator(context, ref, entity.itemJson))),
             Positioned(
               right: 0,
               bottom: 0,

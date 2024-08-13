@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uploader/uploader.dart';
 
 import '../default/uilabels.dart';
 
+import '../model/candiate.dart';
 import '../model/customizer.dart';
 
 import '../provider/customizer.dart';
 import 'cl_tile.dart';
+import 'uploader.dart';
 
 class UploadCandidateView extends ConsumerWidget {
   final Candidate candidate;
@@ -23,9 +24,7 @@ class UploadCandidateView extends ConsumerWidget {
     final UILabelsNonNullable uiLabels = cfg.uiLabels;
     return InkWell(
       onTap: () {
-        ref
-            .read(uploadCandidatesNotifierProvider.notifier)
-            .toggleSelection(candidate);
+        CLUploader.onSelect(ref, candidate);
       },
       child: CLTile(
         backgroundColor:
@@ -37,7 +36,8 @@ class UploadCandidateView extends ConsumerWidget {
                 child: Padding(
                     padding: const EdgeInsets.only(
                         top: 2, left: 2, right: 2, bottom: 2),
-                    child: cfg.previewGenerator(context, ref, candidate.path))),
+                    child: cfg.previewGenerator(
+                        context, ref, candidate.item.path))),
             Positioned(
               bottom: 2,
               right: 8,

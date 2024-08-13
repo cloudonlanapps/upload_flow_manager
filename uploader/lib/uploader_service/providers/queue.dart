@@ -3,15 +3,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqlite3/sqlite3.dart';
 
-import '../db/entity_db.dart';
-import '../export/entity.dart';
-import '../export/status.dart';
-import '../export/config.dart';
-import '../models/candidates/candiate.dart';
+import '../models/entity.dart';
+import '../models/entity_db.dart';
+import '../models/status.dart';
+import '../models/upload_manager.dart';
+import '../models/uploadable_item.dart';
 
 class UploadQueueNotifier
     extends StateNotifier<AsyncValue<List<UploadEntity>>> {
-  final UploadHandler uploadManager;
+  final UploadManager uploadManager;
   late final Database database;
   UploadQueueNotifier({required this.uploadManager, required this.database})
       : super(const AsyncValue.loading()) {
@@ -20,13 +20,13 @@ class UploadQueueNotifier
 
   Future<void> load() async {
     EntityDB.createTable(database);
-    refresh();
+    await refresh();
   }
 
-  void refresh() async {
+  Future<void> refresh() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final List<UploadEntity> uploadEntities = EntityDB.load(database);
+      final uploadEntities = EntityDB.load(database);
       return uploadEntities;
     });
   }
@@ -41,23 +41,30 @@ class UploadQueueNotifier
     refresh();
   }
 
-  void addCandidates(List<Candidate> candidates) async {
+  Future<void> addCandidates(List<UploadableItem> candidates) async {
     state = const AsyncValue.loading();
-    EntityDB.addCandidates(database, candidates);
-    final List<UploadEntity> uploadEntities = EntityDB.load(database);
-    for (var element in uploadEntities) {
+    await EntityDB.addCandidates(database, candidates);
+    final uploadEntities = EntityDB.load(database);
+    for (final element in uploadEntities) {
       if (!element.isScheduled) {
         await uploadManager.scheduleUpload(element);
         EntityDB.markAsScheduled(database, element);
       }
     }
-    refresh();
+    await refresh();
   }
 
-  void updateStatus(int taskId,
-      {required UploadStatus status, String? response}) {
-    EntityDB.updateStatusByID(database, taskId,
-        status: status, response: response);
+  void updateStatus(
+    int taskId, {
+    required UploadStatus status,
+    String? response,
+  }) {
+    EntityDB.updateStatusByID(
+      database,
+      taskId,
+      status: status,
+      response: response,
+    );
     refresh();
   }
 
@@ -72,5 +79,6 @@ final uploadQueueNotifierProvider =
   ref,
 ) {
   throw Exception(
-      "Upload Queue Provider is available only under Uploader Context");
+    'Upload Queue Provider is available only under Uploader Context',
+  );
 });

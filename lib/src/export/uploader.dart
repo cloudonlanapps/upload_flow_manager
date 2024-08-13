@@ -7,19 +7,21 @@ import '../default/generate_preview.dart';
 
 import '../default/pick_items.dart';
 import '../default/uilabels.dart';
+import '../model/candidates.dart';
 import '../provider/customizer.dart';
 import '../provider/others.dart';
 import '../view/error.dart';
 import '../view/loading.dart';
 
 import '../model/customizer.dart';
+import '../view/uploader.dart';
 import '../view/uploader_view.dart';
 import 'config.dart';
 
 class MediaUploader extends StatelessWidget {
   final String? url;
   final String? fileField;
-  final UploadHandler? uploadHandler;
+
   final PickItems? pickItems;
   final PreviewGenerator? previewGenerator;
   final UILabels? uiLabels;
@@ -29,13 +31,12 @@ class MediaUploader extends StatelessWidget {
     super.key,
     this.url,
     this.fileField,
-    this.uploadHandler,
     this.pickItems,
     this.previewGenerator,
     this.uiLabels,
     this.sqlite3LibOverrider,
   }) {
-    if (url == null && uploadHandler == null) {
+    if (url == null) {
       throw Exception("Provide either 'url' or uploadHandler");
     }
   }
@@ -62,11 +63,22 @@ class MediaUploader extends StatelessWidget {
             },
             loadingBuilder: () => const LoadingView(),
             uploadConfig: UploadConfig(
-                url: url,
-                fileField: fileField,
-                uploadHandler: uploadHandler,
+                url: url!,
+                fileField: fileField!,
                 sqlite3LibOverrider: sqlite3LibOverrider),
-            builder: () => const UploaderUIView(),
+            builder: (
+                    {required Candidates candidates,
+                    required List<UploadEntity> queue,
+                    required void Function() onRetry,
+                    required void Function() onRemoveAll,
+                    required void Function() onRemoveCompleted}) =>
+                UploaderUIView(
+              candidates: candidates,
+              queue: queue,
+              onRetry: onRetry,
+              onRemoveAll: onRemoveAll,
+              onRemoveCompleted: onRemoveCompleted,
+            ),
           ),
         );
       },

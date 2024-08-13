@@ -1,12 +1,8 @@
 library uploader;
 
-export 'export/status.dart';
-export 'export/entity.dart';
-export 'export/config.dart';
-export 'widgets/uploader.dart' show CLUploader;
-
-/// REMOVE / Abstract out!
-export 'providers/candidates.dart';
-export 'models/candidates/candiate.dart';
-export 'models/candidates/candidates.dart';
-export 'providers/queue.dart';
+export 'uploader_service/providers/queue.dart';
+export 'uploader_service/models/uploader_config.dart';
+export 'uploader_service/models/uploadable_item.dart';
+export 'uploader_service/models/entity.dart';
+export 'uploader_service/models/status.dart';
+export 'uploader_service/impl/http_uploader.dart';

@@ -5,6 +5,21 @@ import 'package:uploader/uploader.dart';
 import '../model/customizer.dart';
 
 import '../provider/customizer.dart';
+import 'uploader.dart';
+
+@immutable
+class MediaItem extends UploadableItem {
+  final String filepath;
+  MediaItem(this.filepath);
+
+  String get path => filepath;
+
+  @override
+  String toJSON() {
+    // TODO: implement toJSON
+    return filepath;
+  }
+}
 
 class CandidatePicker extends ConsumerWidget {
   final String label;
@@ -23,10 +38,10 @@ class CandidatePicker extends ConsumerWidget {
           Flexible(
             child: IconButton(
               onPressed: () async {
-                List<String> candidates = await cfg.pickItems(context, ref);
-                ref
-                    .read(uploadCandidatesNotifierProvider.notifier)
-                    .add(candidates);
+                List<MediaItem> candidates = (await cfg.pickItems(context, ref))
+                    .map((e) => MediaItem(e))
+                    .toList();
+                CLUploader.addCandidates(ref, candidates);
               },
               icon: Icon(iconData),
             ),

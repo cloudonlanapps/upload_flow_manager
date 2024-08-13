@@ -1,32 +1,34 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
-import 'package:uploader/uploader.dart';
+import '../models/entity.dart';
+import '../models/status.dart';
+import '../models/upload_manager.dart';
 
-class UploadManagerUsingHttp extends UploadHandler {
-  UploadManagerUsingHttp({required url, String? fileField}) {
-    this.url = url;
-    this.fileField = fileField ?? "file";
+class UploadManagerUsingHttp extends UploadManager {
+  UploadManagerUsingHttp({required super.config}) {
     onEvent.listen((event) async {
-      if (!listererLock) {
-        listererLock = true;
+      if (!isProcessing) {
+        isProcessing = true;
         await processQueue();
-        listererLock = false;
+        isProcessing = false;
       }
     });
   }
 
-  StreamController checkQueueEventController = StreamController.broadcast();
-  bool listererLock = false;
+  StreamController<String> checkQueueEventController =
+      StreamController.broadcast();
+  bool isProcessing = false;
   Queue<UploadEntity> queue = Queue();
 
-  Stream get onEvent => checkQueueEventController.stream;
-  Uri get uri => Uri.parse(url);
-  processQueue() async {
+  Stream<String> get onEvent => checkQueueEventController.stream;
+  Uri get uri => Uri.parse(config.url);
+  Future<void> processQueue() async {
     while (queue.isNotEmpty) {
-      UploadEntity entity = queue.removeFirst();
+      final entity = queue.removeFirst();
       await fileUpload(entity);
     }
   }
@@ -35,13 +37,13 @@ class UploadManagerUsingHttp extends UploadHandler {
   Future<void> scheduleUpload(UploadEntity entity) async {
     queue.addLast(entity);
     updateStatus?.call(entity.id!, status: UploadStatus.enqueued);
-    checkQueueEventController.add("New Item Added");
+    checkQueueEventController.add('New Item Added');
   }
 
   static bool trustSelfSigned = true;
 
   static HttpClient getHttpClient() {
-    HttpClient httpClient = HttpClient()
+    final httpClient = HttpClient()
       ..connectionTimeout = const Duration(seconds: 10)
       ..badCertificateCallback =
           ((X509Certificate cert, String host, int port) => trustSelfSigned);
@@ -62,12 +64,19 @@ class UploadManagerUsingHttp extends UploadHandler {
           updateProgress?.call(entity.id!, progress);
         },
       );
+      final itemMap = jsonDecode(entity.itemJson) as Map<String, String?>;
       // request.headers['HeaderKey'] = 'header_value';
       // request.fields['form_key'] = 'form_value';
-      request.files.add(
-        await http.MultipartFile.fromPath(fileField, entity.path),
-      );
-      final http.StreamedResponse streamedResponse = await request.send();
+      if (itemMap.containsKey(config.fileField)) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            config.fileField,
+
+            itemMap[config.fileField]!, //
+          ),
+        );
+      }
+      final streamedResponse = await request.send();
       streamedResponse.stream.listen((value) {
         updateStatus?.call(entity.id!, status: UploadStatus.complete);
       });
@@ -87,7 +96,7 @@ class MultipartRequest extends http.MultipartRequest {
 
   final void Function(int bytes, int totalBytes)? onProgress;
 
-  /// Freezes all mutable fields and returns a single-subscription [ByteStream]
+  /// Freezes all mutable fields and returns a single-subscription [http.ByteStream]
   /// that will emit the request body.
   @override
   http.ByteStream finalize() {
@@ -95,7 +104,7 @@ class MultipartRequest extends http.MultipartRequest {
     if (onProgress == null) return byteStream;
 
     final total = contentLength;
-    int bytes = 0;
+    var bytes = 0;
 
     final t = StreamTransformer.fromHandlers(
       handleData: (List<int> data, EventSink<List<int>> sink) {

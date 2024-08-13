@@ -2,10 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:upload_flow_manager/src/view/candidate_picker.dart';
 import 'package:uploader/uploader.dart';
 
 import '../default/uilabels.dart';
 
+import '../model/candidates.dart';
 import '../model/customizer.dart';
 import '../model/menu.dart';
 
@@ -13,44 +15,56 @@ import '../provider/customizer.dart';
 import '../provider/others.dart';
 
 import 'entity_view.dart';
-import 'error.dart';
-import 'loading.dart';
+
 import 'upload_selector.dart';
 import 'menu_view.dart';
+import 'uploader.dart';
 
 class UploaderUIView extends ConsumerWidget {
-  const UploaderUIView({super.key});
+  const UploaderUIView(
+      {super.key,
+      required this.candidates,
+      required this.queue,
+      required this.onRetry,
+      required this.onRemoveAll,
+      required this.onRemoveCompleted});
+  final Candidates candidates;
+  final List<UploadEntity> queue;
+  final void Function() onRetry;
+  final void Function() onRemoveAll;
+  final void Function() onRemoveCompleted;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<List<UploadEntity>> uploadQueueAsync =
-        ref.watch(uploadQueueNotifierProvider);
-    final Candidates uploader = ref.watch(uploadCandidatesNotifierProvider);
     final selectFiles = ref.watch(onSelectFileProvider);
-
-    return uploadQueueAsync.when(data: (queue) {
-      if (selectFiles || queue.isEmpty) {
-        return UploadSelector(
-          queue: queue,
-          onFileSelectionDone: ref.read(onSelectFileProvider.notifier).clear,
-          uploader: uploader,
-        );
-      }
-      return _UploaderView(
-          queue: queue,
-          onSelectFiles: ref.read(onSelectFileProvider.notifier).set);
-    }, error: (err, _) {
-      return const ErrorView(errorMessage: "DB Access Failed?");
-    }, loading: () {
-      return const LoadingView();
-    });
+    if (selectFiles || queue.isEmpty) {
+      return UploadSelector(
+        queue: queue,
+        onFileSelectionDone: ref.read(onSelectFileProvider.notifier).clear,
+        candidates: candidates,
+      );
+    }
+    return _UploaderView(
+        queue: queue,
+        onRetry: onRetry,
+        onRemoveAll: onRemoveAll,
+        onRemoveCompleted: onRemoveCompleted,
+        onSelectFiles: ref.read(onSelectFileProvider.notifier).set);
   }
 }
 
 class _UploaderView extends ConsumerWidget {
   final List<UploadEntity> queue;
   final Function() onSelectFiles;
-  const _UploaderView({required this.queue, required this.onSelectFiles});
+  final void Function() onRetry;
+  final void Function() onRemoveAll;
+  final void Function() onRemoveCompleted;
+  const _UploaderView(
+      {required this.queue,
+      required this.onSelectFiles,
+      required this.onRetry,
+      required this.onRemoveAll,
+      required this.onRemoveCompleted});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,21 +78,17 @@ class _UploaderView extends ConsumerWidget {
       MenuItem(
           iconData: uiLabels.menuRetry.icon,
           label: uiLabels.menuRetry.label,
-          onSelection: () {
-            ref
-                .read(uploadQueueNotifierProvider.notifier)
-                .refresh(); // TODO: Change to retry
-          }),
+          onSelection: onRetry),
       MenuItem(
           iconData: uiLabels.pickerSelectMore.icon,
           label: uiLabels.pickerSelectMore.label,
           onSelection: () async {
-            List<String> candidates = await cfg.pickItems(context, ref);
+            List<MediaItem> candidates = (await cfg.pickItems(context, ref))
+                .map((e) => MediaItem(e))
+                .toList();
             if (candidates.isNotEmpty) {
               onSelectFiles();
-              ref
-                  .read(uploadCandidatesNotifierProvider.notifier)
-                  .add(candidates);
+              CLUploader.addCandidates(ref, candidates);
             }
           }),
     ], additionalMenuItems: [
@@ -87,16 +97,12 @@ class _UploaderView extends ConsumerWidget {
         MenuItem(
             iconData: uiLabels.menuRemoveAll.icon,
             label: uiLabels.menuRemoveAll.label,
-            onSelection: () {
-              ref.read(uploadQueueNotifierProvider.notifier).removeAll();
-            }),
+            onSelection: onRemoveAll),
       if (queue.any((element) => element.uploadStatus.isFinalState))
         MenuItem(
             iconData: uiLabels.menuRemoveCompleted.icon,
             label: uiLabels.menuRemoveCompleted.label,
-            onSelection: () {
-              ref.read(uploadQueueNotifierProvider.notifier).removeCompleted();
-            })
+            onSelection: onRemoveCompleted)
     ]);
 
     return Column(
@@ -111,7 +117,7 @@ class _UploaderView extends ConsumerWidget {
                       itemCount: queue.length,
                       itemBuilder: (BuildContext ctx, index) {
                         return Hero(
-                          tag: queue[index].path,
+                          tag: queue[index].itemJson,
                           child: UploadEntityView(
                             entity: queue[index],
                           ),

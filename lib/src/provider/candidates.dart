@@ -1,17 +1,18 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:upload_flow_manager/src/view/candidate_picker.dart';
 
-import '../models/candidates/candiate.dart';
-import '../models/candidates/candidates.dart';
+import '../model/candiate.dart';
+import '../model/candidates.dart';
 
 class UploadCandidatesNotifier extends StateNotifier<Candidates> {
   UploadCandidatesNotifier() : super(Candidates());
 
-  void add(List<String> files) {
+  void add(List<MediaItem> files) {
     final uploadCandidate = <Candidate>[];
     for (var i = 0; i < files.length; i++) {
-      uploadCandidate.add(Candidate(path: files[i]));
+      uploadCandidate.add(Candidate(item: files[i]));
     }
 
     state = state.add(uploadCandidate);
